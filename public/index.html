@@ -9,6 +9,7 @@
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
+      background-color: #f8f9fa;
     }
     h1 {
       text-align: center;
@@ -18,28 +19,40 @@
       padding: 1rem 0;
     }
     table {
-      width: 100%;
+      width: 90%;
       border-collapse: collapse;
       margin: 20px auto;
-      max-width: 1200px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      background: white;
     }
     th, td {
       padding: 10px;
       border: 1px solid #ddd;
       text-align: left;
+      font-size: 14px;
     }
     th {
-      background-color: #f4f4f4;
+      background-color: #007bff;
+      color: white;
     }
     tr:nth-child(even) {
       background-color: #f9f9f9;
+    }
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+    .loading {
+      text-align: center;
+      margin: 20px;
+      font-size: 16px;
+      color: #555;
     }
   </style>
 </head>
 <body>
   <h1>GigDates Tracker Logs</h1>
-  <table>
+  <div id="loading" class="loading">Loading logs, please wait...</div>
+  <table style="display:none;">
     <thead>
       <tr>
         <th>Timestamp</th>
@@ -53,12 +66,18 @@
   
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      const logsTable = document.querySelector('table');
+      const loadingIndicator = document.getElementById('loading');
+
       fetch('https://gigdates-tracker.netlify.app/.netlify/functions/viewLog')
         .then(response => response.json())
         .then(data => {
-          const logsTable = document.getElementById('logs');
+          loadingIndicator.style.display = 'none';
+          logsTable.style.display = 'table';
+          
+          const logsBody = document.getElementById('logs');
           if (data.length === 0) {
-            logsTable.innerHTML = '<tr><td colspan="4">No logs available</td></tr>';
+            logsBody.innerHTML = '<tr><td colspan="4">No logs available</td></tr>';
           } else {
             data.forEach(log => {
               const row = `
@@ -69,13 +88,13 @@
                   <td>${log.referrer || 'N/A'}</td>
                 </tr>
               `;
-              logsTable.innerHTML += row;
+              logsBody.innerHTML += row;
             });
           }
         })
         .catch(error => {
           console.error('Error fetching logs:', error);
-          document.getElementById('logs').innerHTML = '<tr><td colspan="4">Error loading logs</td></tr>';
+          loadingIndicator.textContent = 'Error loading logs. Please try again later.';
         });
     });
   </script>
