@@ -1,16 +1,9 @@
-const fs = require("fs");
-const path = require("path");
-
-const logFilePath = path.resolve(__dirname, "../../data");
-
-if (!fs.existsSync(logFilePath)) {
-  fs.writeFileSync(logFilePath, "module.exports = [];", "utf-8");
-}
+// In-memory log array
+let logs = [];
 
 exports.handler = async (event) => {
   try {
     console.log("HTTP Method:", event.httpMethod);
-    console.log("Origin:", event.headers.origin);
 
     // Handle preflight requests (OPTIONS)
     if (event.httpMethod === "OPTIONS") {
@@ -18,14 +11,13 @@ exports.handler = async (event) => {
       return {
         statusCode: 200,
         headers: {
-          "Access-Control-Allow-Origin": "https://gigdates.net", // Restrict to your domain
+          "Access-Control-Allow-Origin": "https://gigdates.net",
           "Access-Control-Allow-Headers": "Content-Type",
           "Access-Control-Allow-Methods": "POST, OPTIONS",
         },
         body: "",
       };
     }
-    
 
     // Reject unsupported HTTP methods
     if (event.httpMethod !== "POST") {
@@ -43,14 +35,7 @@ exports.handler = async (event) => {
     const data = JSON.parse(event.body);
     console.log("Received Data:", data);
 
-    // Read existing logs
-    let logs = [];
-    if (fs.existsSync(logFilePath)) {
-      const logContent = fs.readFileSync(logFilePath, "utf-8");
-      logs = eval(logContent.replace("module.exports =", "").trim()) || [];
-    }
-
-    // Append the new log entry
+    // Append the new log entry to in-memory logs
     logs.push({
       eventType: data.eventType,
       timestamp: data.timestamp,
@@ -58,15 +43,13 @@ exports.handler = async (event) => {
       referrer: data.referrer,
     });
 
-    // Write updated logs back to log.js
-    fs.writeFileSync(logFilePath, `module.exports = ${JSON.stringify(logs, null, 2)};`, "utf-8");
+    console.log("Current Logs:", logs); // Logs available for debugging
 
     return {
       statusCode: 200,
       headers: {
         "Access-Control-Allow-Origin": "https://gigdates.net",
         "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
       },
       body: "Event logged successfully",
     };
