@@ -1,13 +1,13 @@
-// viewLog.js: View logged events
-const { getLogs } = require('./log');
+// viewLog.js: Retrieve logs from shared memory
+const { getLogs } = require('./log'); // Shared log module
 
 exports.handler = async () => {
     try {
-        const logs = getLogs();
+        const logs = getLogs(); // Fetch logs from shared memory
 
         return {
             statusCode: 200,
-            body: JSON.stringify(logs, null, 2),
+            body: JSON.stringify(logs, null, 2), // Pretty print logs
         };
     } catch (error) {
         return {

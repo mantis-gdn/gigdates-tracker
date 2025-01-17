@@ -14,7 +14,7 @@ exports.handler = async (event) => {
                 };
             }
 
-            // Log the page load event using the shared `log.js`
+            // Add log to shared memory
             addLog({ type: 'pageLoad', url, referrer });
 
             return {
@@ -29,7 +29,6 @@ exports.handler = async (event) => {
         }
     }
 
-    // Respond with an error for unsupported HTTP methods
     return {
         statusCode: 405,
         body: JSON.stringify({ error: 'Method Not Allowed' }),
