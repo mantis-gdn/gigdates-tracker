@@ -15,7 +15,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers: {
-        "Access-Control-Allow-Origin": "*", // Allow requests from any origin
+        "Access-Control-Allow-Origin": "gigdates.net", // Allow requests from gigdates.net
         "Access-Control-Allow-Headers": "Content-Type",
         "Access-Control-Allow-Methods": "POST, OPTIONS",
       },
@@ -28,7 +28,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 405,
       headers: {
-        "Access-Control-Allow-Origin": "*", // Allow requests from any origin
+        "Access-Control-Allow-Origin": "gigdates.net", // Allow requests from gigdates.net
         "Access-Control-Allow-Headers": "Content-Type",
       },
       body: "Method Not Allowed",
@@ -51,7 +51,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers: {
-        "Access-Control-Allow-Origin": "*", // Allow requests from any origin
+        "Access-Control-Allow-Origin": "gigdates.net", // Allow requests from gigdates.net
         "Access-Control-Allow-Headers": "Content-Type",
       },
       body: "Event logged successfully",
