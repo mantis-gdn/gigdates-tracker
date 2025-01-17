@@ -18,7 +18,7 @@ async function addLog(event) {
 
 async function getLogs() {
     const snapshot = await logsCollection.orderBy('timestamp', 'desc').get();
-    return snapshot.docs.map(doc => doc.data());
+    return snapshot.docs.map(doc => doc.data() || {}); // Ensure it returns an array
 }
 
 module.exports = { addLog, getLogs };

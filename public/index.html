@@ -70,32 +70,32 @@
       const loadingIndicator = document.getElementById('loading');
 
       fetch('https://gigdates-tracker.netlify.app/.netlify/functions/viewLog')
-        .then(response => response.json())
-        .then(data => {
-          loadingIndicator.style.display = 'none';
-          logsTable.style.display = 'table';
-          
-          const logsBody = document.getElementById('logs');
-          if (data.length === 0) {
+    .then(response => response.json())
+    .then(data => {
+        loadingIndicator.style.display = 'none';
+        logsTable.style.display = 'table';
+
+        if (!Array.isArray(data) || data.length === 0) {
             logsBody.innerHTML = '<tr><td colspan="4">No logs available</td></tr>';
-          } else {
-            data.forEach(log => {
-              const row = `
+            return;
+        }
+
+        data.forEach(log => {
+            const row = `
                 <tr>
-                  <td>${log.timestamp}</td>
-                  <td>${log.type}</td>
-                  <td>${log.url}</td>
-                  <td>${log.referrer || 'N/A'}</td>
+                    <td>${log.timestamp}</td>
+                    <td>${log.type}</td>
+                    <td>${log.url}</td>
+                    <td>${log.referrer || 'N/A'}</td>
                 </tr>
-              `;
-              logsBody.innerHTML += row;
-            });
-          }
-        })
-        .catch(error => {
-          console.error('Error fetching logs:', error);
-          loadingIndicator.textContent = 'Error loading logs. Please try again later.';
+            `;
+            logsBody.innerHTML += row;
         });
+    })
+    .catch(error => {
+        console.error('Error fetching logs:', error);
+        loadingIndicator.textContent = 'Error loading logs. Please try again later.';
+    });
     });
   </script>
 </body>
