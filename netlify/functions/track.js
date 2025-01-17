@@ -3,6 +3,8 @@ const path = require("path");
 
 const logFilePath = path.resolve(__dirname, "log.js");
 
+console.log("Log file path:", logFilePath);
+
 if (!fs.existsSync(logFilePath)) {
   fs.writeFileSync(logFilePath, "module.exports = [];", "utf-8");
 }
