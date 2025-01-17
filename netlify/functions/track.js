@@ -61,7 +61,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 500,
       headers: {
-        "Access-Control-Allow-Origin": "*", // Allow requests from any origin
+        "Access-Control-Allow-Origin": "gigdates.net", // Allow requests from gigdates.net
         "Access-Control-Allow-Headers": "Content-Type",
       },
       body: "Internal Server Error",
