@@ -17,8 +17,19 @@ async function addLog(event) {
 }
 
 async function getLogs() {
-    const snapshot = await logsCollection.orderBy('timestamp', 'desc').get();
-    return snapshot.docs.map(doc => doc.data() || {}); // Ensure it returns an array
+    try {
+        console.log('Connecting to database...');
+        const snapshot = await logsCollection.orderBy('timestamp', 'desc').get();
+        console.log('Snapshot retrieved:', snapshot);
+
+        const logs = snapshot.docs.map(doc => doc.data() || {});
+        console.log('Processed logs:', logs);
+
+        return logs;
+    } catch (error) {
+        console.error('Error in getLogs:', error.message, error.stack);
+        throw new Error('Failed to fetch logs');
+    }
 }
 
 module.exports = { addLog, getLogs };
