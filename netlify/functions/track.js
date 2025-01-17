@@ -39,7 +39,6 @@ exports.handler = async (event) => {
     const data = JSON.parse(event.body);
     logs.push({
       eventType: data.eventType,
-      eventData: data.eventData,
       timestamp: data.timestamp,
       url: data.url,
       referrer: data.referrer,
