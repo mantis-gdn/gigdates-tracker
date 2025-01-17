@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const logFilePath = path.resolve(__dirname, "./log.js");
+const logFilePath = path.resolve(__dirname, "../../data//log.js");
 
 if (!fs.existsSync(logFilePath)) {
   fs.writeFileSync(logFilePath, "module.exports = [];", "utf-8");
@@ -65,7 +65,6 @@ exports.handler = async (event) => {
       statusCode: 200,
       headers: {
         "Access-Control-Allow-Origin": "https://gigdates.net",
-        "Access-Control-Allow-Headers": "Content-Type",
         "Access-Control-Allow-Headers": "Content-Type",
         "Access-Control-Allow-Methods": "POST, OPTIONS",
       },

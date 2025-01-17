@@ -15,7 +15,7 @@ exports.handler = async (event) => {
       return { statusCode: 404, body: "Log file not found" };
     }
 
-    const logs = require("./log");
+    const logs = require("../../data/log");
     console.log("Logs:", logs);
     return {
       statusCode: 200,
