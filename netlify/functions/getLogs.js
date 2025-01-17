@@ -10,6 +10,7 @@ exports.handler = async (event) => {
 
   try {
     if (!fs.existsSync(logFilePath)) {
+        console.log("Log file not found");
       return { statusCode: 404, body: "Log file not found" };
     }
 
