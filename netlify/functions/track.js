@@ -10,8 +10,29 @@ if (!fs.existsSync(logFilePath)) {
 const logs = require("./log");
 
 exports.handler = async (event) => {
+  // Handle preflight requests
+  if (event.httpMethod === "OPTIONS") {
+    return {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*", // Allow requests from any origin
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+      },
+      body: "",
+    };
+  }
+
+  // Reject unsupported HTTP methods
   if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method Not Allowed" };
+    return {
+      statusCode: 405,
+      headers: {
+        "Access-Control-Allow-Origin": "*", // Allow requests from any origin
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+      body: "Method Not Allowed",
+    };
   }
 
   try {
@@ -24,11 +45,26 @@ exports.handler = async (event) => {
       referrer: data.referrer,
     });
 
+    // Write the updated logs to the log file
     fs.writeFileSync(logFilePath, `module.exports = ${JSON.stringify(logs, null, 2)};`, "utf-8");
 
-    return { statusCode: 200, body: "Event logged successfully" };
+    return {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*", // Allow requests from any origin
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+      body: "Event logged successfully",
+    };
   } catch (error) {
     console.error("Logging error:", error);
-    return { statusCode: 500, body: "Internal Server Error" };
+    return {
+      statusCode: 500,
+      headers: {
+        "Access-Control-Allow-Origin": "*", // Allow requests from any origin
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+      body: "Internal Server Error",
+    };
   }
 };
