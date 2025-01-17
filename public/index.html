@@ -2,9 +2,30 @@
 <html>
 <head>
   <title>GigDates Tracker</title>
+  <script>
+    async function fetchLogs() {
+      try {
+        const response = await fetch('/.netlify/functions/getLogs');
+        if (!response.ok) {
+          throw new Error('Failed to fetch logs');
+        }
+        const logs = await response.json();
+        const logContainer = document.getElementById('logs');
+        logContainer.innerHTML = logs.map(log => `<pre>${JSON.stringify(log, null, 2)}</pre>`).join('');
+      } catch (error) {
+        console.error('Error fetching logs:', error);
+        document.getElementById('logs').textContent = 'Error loading logs.';
+      }
+    }
+
+    // Fetch logs on page load
+    window.onload = fetchLogs;
+  </script>
 </head>
 <body>
   <h1>Welcome to GigDates Tracker</h1>
   <p>This is the front-end for the tracker.</p>
+  <h2>Logs:</h2>
+  <div id="logs">Loading logs...</div>
 </body>
 </html>
