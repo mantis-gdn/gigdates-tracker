@@ -14,16 +14,18 @@ exports.handler = async (event) => {
 
     // Handle preflight requests (OPTIONS)
     if (event.httpMethod === "OPTIONS") {
+      console.log("Handling OPTIONS preflight request");
       return {
         statusCode: 200,
         headers: {
-          "Access-Control-Allow-Origin": "https://gigdates.net",
+          "Access-Control-Allow-Origin": "https://gigdates.net", // Restrict to your domain
           "Access-Control-Allow-Headers": "Content-Type",
           "Access-Control-Allow-Methods": "POST, OPTIONS",
         },
         body: "",
       };
     }
+    
 
     // Reject unsupported HTTP methods
     if (event.httpMethod !== "POST") {
