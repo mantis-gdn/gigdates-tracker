@@ -5,6 +5,7 @@ const logFilePath = path.resolve(__dirname, "log.js");
 
 exports.handler = async (event) => {
   if (event.httpMethod !== "GET") {
+    console.error("Invalid HTTP Method");
     return { statusCode: 405, body: "Method Not Allowed" };
   }
 
@@ -15,6 +16,7 @@ exports.handler = async (event) => {
     }
 
     const logs = require("./log");
+    console.log("Logs:", logs);
     return {
       statusCode: 200,
       body: JSON.stringify(logs),
