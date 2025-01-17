@@ -9,12 +9,15 @@ if (!fs.existsSync(logFilePath)) {
 
 exports.handler = async (event) => {
   try {
+    console.log("HTTP Method:", event.httpMethod);
+    console.log("Origin:", event.headers.origin);
+
     // Handle preflight requests (OPTIONS)
     if (event.httpMethod === "OPTIONS") {
       return {
         statusCode: 200,
         headers: {
-          "Access-Control-Allow-Origin": "https://gigdates.net", // Allow only your domain
+          "Access-Control-Allow-Origin": "https://gigdates.net",
           "Access-Control-Allow-Headers": "Content-Type",
           "Access-Control-Allow-Methods": "POST, OPTIONS",
         },
@@ -27,7 +30,7 @@ exports.handler = async (event) => {
       return {
         statusCode: 405,
         headers: {
-          "Access-Control-Allow-Origin": "https://gigdates.net", // Allow only your domain
+          "Access-Control-Allow-Origin": "https://gigdates.net",
           "Access-Control-Allow-Headers": "Content-Type",
         },
         body: "Method Not Allowed",
@@ -36,6 +39,7 @@ exports.handler = async (event) => {
 
     // Parse the JSON body
     const data = JSON.parse(event.body);
+    console.log("Received Data:", data);
 
     // Read existing logs
     let logs = [];
@@ -58,17 +62,17 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers: {
-        "Access-Control-Allow-Origin": "https://gigdates.net", // Allow only your domain
+        "Access-Control-Allow-Origin": "https://gigdates.net",
         "Access-Control-Allow-Headers": "Content-Type",
       },
       body: "Event logged successfully",
     };
   } catch (error) {
-    console.error("Logging error:", error);
+    console.error("Error:", error.message);
     return {
       statusCode: 500,
       headers: {
-        "Access-Control-Allow-Origin": "https://gigdates.net", // Allow only your domain
+        "Access-Control-Allow-Origin": "https://gigdates.net",
         "Access-Control-Allow-Headers": "Content-Type",
       },
       body: `Internal Server Error: ${error.message}`,
