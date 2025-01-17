@@ -1,15 +1,24 @@
-// log.js: Shared in-memory log storage
-const logs = []; // Shared memory array
+const admin = require('firebase-admin');
 
-function addLog(event) {
-    logs.push({
+if (!admin.apps.length) {
+    admin.initializeApp({
+        credential: admin.credential.applicationDefault(),
+    });
+}
+
+const db = admin.firestore();
+const logsCollection = db.collection('logs');
+
+async function addLog(event) {
+    await logsCollection.add({
         ...event,
         timestamp: new Date().toISOString(),
     });
 }
 
-function getLogs() {
-    return logs;
+async function getLogs() {
+    const snapshot = await logsCollection.orderBy('timestamp', 'desc').get();
+    return snapshot.docs.map(doc => doc.data());
 }
 
 module.exports = { addLog, getLogs };
