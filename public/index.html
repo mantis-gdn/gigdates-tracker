@@ -71,32 +71,37 @@
       const logsBody = document.getElementById('logs'); // Correctly define logsBody
 
       fetch('https://gigdates-tracker.netlify.app/.netlify/functions/viewLog')
-        .then(response => response.json())
-        .then(data => {
-          loadingIndicator.style.display = 'none';
-          logsTable.style.display = 'table';
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        loadingIndicator.style.display = 'none';
+        logsTable.style.display = 'table';
 
-          if (!Array.isArray(data) || data.length === 0) {
-              logsBody.innerHTML = '<tr><td colspan="4">No logs available</td></tr>';
-              return;
-          }
+        if (!Array.isArray(data) || data.length === 0) {
+            logsBody.innerHTML = '<tr><td colspan="4">No logs available</td></tr>';
+            return;
+        }
 
-          data.forEach(log => {
-              const row = `
-                  <tr>
-                      <td>${log.timestamp}</td>
-                      <td>${log.type}</td>
-                      <td>${log.url}</td>
-                      <td>${log.referrer || 'N/A'}</td>
-                  </tr>
-              `;
-              logsBody.innerHTML += row;
-          });
-        })
-        .catch(error => {
-          console.error('Error fetching logs:', error);
-          loadingIndicator.textContent = 'Error loading logs. Please try again later.';
+        data.forEach(log => {
+            const row = `
+                <tr>
+                    <td>${log.timestamp}</td>
+                    <td>${log.type}</td>
+                    <td>${log.url}</td>
+                    <td>${log.referrer || 'N/A'}</td>
+                </tr>
+            `;
+            logsBody.innerHTML += row;
         });
+    })
+    .catch(error => {
+        console.error('Error fetching logs:', error);
+        loadingIndicator.textContent = `Error loading logs: ${error.message}`;
+    });
     });
 </script>
 </body>
