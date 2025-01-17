@@ -1,7 +1,8 @@
-// In-memory log array
 let logs = [];
 
 exports.handler = async (event) => {
+  const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || "https://gigdates.net";
+
   try {
     console.log("HTTP Method:", event.httpMethod);
 
@@ -9,7 +10,7 @@ exports.handler = async (event) => {
       return {
         statusCode: 200,
         headers: {
-          "Access-Control-Allow-Origin": "https://gigdates.net",
+          "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
           "Access-Control-Allow-Headers": "Content-Type",
           "Access-Control-Allow-Methods": "POST, OPTIONS",
         },
@@ -20,20 +21,32 @@ exports.handler = async (event) => {
     if (event.httpMethod !== "POST") {
       return {
         statusCode: 405,
-        headers: {
-          "Access-Control-Allow-Origin": "https://gigdates.net",
-          "Access-Control-Allow-Headers": "Content-Type",
-        },
+        headers: { "Access-Control-Allow-Origin": ALLOWED_ORIGIN },
         body: "Method Not Allowed",
       };
     }
 
     const data = JSON.parse(event.body);
-    console.log("Received Data:", data);
+
+    if (!data.eventType || !data.timestamp || !data.url || !data.referrer) {
+      return {
+        statusCode: 400,
+        headers: { "Access-Control-Allow-Origin": ALLOWED_ORIGIN },
+        body: "Missing or invalid data fields",
+      };
+    }
+
+    if (isNaN(Date.parse(data.timestamp))) {
+      return {
+        statusCode: 400,
+        headers: { "Access-Control-Allow-Origin": ALLOWED_ORIGIN },
+        body: "Invalid timestamp format",
+      };
+    }
 
     logs.push({
       eventType: data.eventType,
-      timestamp: data.timestamp,
+      timestamp: new Date(data.timestamp).toISOString(),
       url: data.url,
       referrer: data.referrer,
     });
@@ -42,10 +55,7 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "https://gigdates.net",
-        "Access-Control-Allow-Headers": "Content-Type",
-      },
+      headers: { "Access-Control-Allow-Origin": ALLOWED_ORIGIN },
       body: "Event logged successfully",
     };
   } catch (error) {
@@ -54,10 +64,7 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 500,
-      headers: {
-        "Access-Control-Allow-Origin": "https://gigdates.net",
-        "Access-Control-Allow-Headers": "Content-Type",
-      },
+      headers: { "Access-Control-Allow-Origin": ALLOWED_ORIGIN },
       body: `Internal Server Error: ${error.message}`,
     };
   }
