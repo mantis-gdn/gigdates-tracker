@@ -5,9 +5,7 @@ exports.handler = async (event) => {
   try {
     console.log("HTTP Method:", event.httpMethod);
 
-    // Handle preflight requests (OPTIONS)
     if (event.httpMethod === "OPTIONS") {
-      console.log("Handling OPTIONS preflight request");
       return {
         statusCode: 200,
         headers: {
@@ -19,7 +17,6 @@ exports.handler = async (event) => {
       };
     }
 
-    // Reject unsupported HTTP methods
     if (event.httpMethod !== "POST") {
       return {
         statusCode: 405,
@@ -31,11 +28,9 @@ exports.handler = async (event) => {
       };
     }
 
-    // Parse the JSON body
     const data = JSON.parse(event.body);
     console.log("Received Data:", data);
 
-    // Append the new log entry to in-memory logs
     logs.push({
       eventType: data.eventType,
       timestamp: data.timestamp,
@@ -43,7 +38,7 @@ exports.handler = async (event) => {
       referrer: data.referrer,
     });
 
-    console.log("Current Logs:", logs); // Logs available for debugging
+    console.log("Current Logs:", logs);
 
     return {
       statusCode: 200,
@@ -54,7 +49,9 @@ exports.handler = async (event) => {
       body: "Event logged successfully",
     };
   } catch (error) {
-    console.error("Error:", error.message);
+    console.error("Unhandled error:", error.message);
+    console.error("Error details:", error);
+
     return {
       statusCode: 500,
       headers: {
