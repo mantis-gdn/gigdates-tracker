@@ -1,28 +1,19 @@
-const fs = require("fs");
-const path = require("path");
-
-const logFilePath = path.resolve(__dirname, "log.js");
+// Shared in-memory logs
+let logs = require("./track").logs;
 
 exports.handler = async (event) => {
   if (event.httpMethod !== "GET") {
-    console.error("Invalid HTTP Method");
     return { statusCode: 405, body: "Method Not Allowed" };
   }
 
   try {
-    if (!fs.existsSync(logFilePath)) {
-        console.log("Log file not found");
-      return { statusCode: 404, body: "Log file not found" };
-    }
-
-    const logs = require("../../data/log");
-    console.log("Logs:", logs);
     return {
       statusCode: 200,
+      headers: { "Access-Control-Allow-Origin": "*" },
       body: JSON.stringify(logs),
     };
   } catch (error) {
-    console.error("Error reading logs:", error);
+    console.error("Error retrieving logs:", error);
     return { statusCode: 500, body: "Internal Server Error" };
   }
 };
