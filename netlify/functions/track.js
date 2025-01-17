@@ -1,22 +1,20 @@
 const fs = require("fs");
 const path = require("path");
 
-// Path to the log file
 const logFilePath = path.resolve(__dirname, "./log.js");
 
-// Ensure log.js exists
 if (!fs.existsSync(logFilePath)) {
   fs.writeFileSync(logFilePath, "module.exports = [];", "utf-8");
 }
 
 exports.handler = async (event) => {
   try {
-    // Handle preflight requests
+    // Handle preflight requests (OPTIONS)
     if (event.httpMethod === "OPTIONS") {
       return {
         statusCode: 200,
         headers: {
-          "Access-Control-Allow-Origin": "https://gigdates.net",
+          "Access-Control-Allow-Origin": "https://gigdates.net", // Allow only your domain
           "Access-Control-Allow-Headers": "Content-Type",
           "Access-Control-Allow-Methods": "POST, OPTIONS",
         },
@@ -29,14 +27,14 @@ exports.handler = async (event) => {
       return {
         statusCode: 405,
         headers: {
-          "Access-Control-Allow-Origin": "https://gigdates.net",
+          "Access-Control-Allow-Origin": "https://gigdates.net", // Allow only your domain
           "Access-Control-Allow-Headers": "Content-Type",
         },
         body: "Method Not Allowed",
       };
     }
 
-    // Parse incoming JSON payload
+    // Parse the JSON body
     const data = JSON.parse(event.body);
 
     // Read existing logs
@@ -46,7 +44,7 @@ exports.handler = async (event) => {
       logs = eval(logContent.replace("module.exports =", "").trim()) || [];
     }
 
-    // Append the new log
+    // Append the new log entry
     logs.push({
       eventType: data.eventType,
       timestamp: data.timestamp,
@@ -60,7 +58,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers: {
-        "Access-Control-Allow-Origin": "https://gigdates.net",
+        "Access-Control-Allow-Origin": "https://gigdates.net", // Allow only your domain
         "Access-Control-Allow-Headers": "Content-Type",
       },
       body: "Event logged successfully",
@@ -70,7 +68,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 500,
       headers: {
-        "Access-Control-Allow-Origin": "https://gigdates.net",
+        "Access-Control-Allow-Origin": "https://gigdates.net", // Allow only your domain
         "Access-Control-Allow-Headers": "Content-Type",
       },
       body: `Internal Server Error: ${error.message}`,
