@@ -1,8 +1,7 @@
 import { Client } from "fauna";
 
 const client = new Client({
-  secret: process.env.FAUNA_SECRET_KEY,
-  endpoint: "https://db.fauna.com", // Adjust if needed
+  secret: process.env.FAUNA_SECRET_KEY
 });
 
 exports.handler = async (event) => {
