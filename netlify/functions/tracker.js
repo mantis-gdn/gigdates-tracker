@@ -1,4 +1,4 @@
-const { Client } = require('faunadb');
+const { Client } = require('fauna');
 
 exports.handler = async (event) => {
   const { headers } = event;
