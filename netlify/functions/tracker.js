@@ -1,4 +1,4 @@
-const faunadb = require('faunadb');
+const faunadb = require('fauna');
 
 exports.handler = async (event) => {
   const { headers } = event;
