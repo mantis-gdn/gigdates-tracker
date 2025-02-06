@@ -1,4 +1,4 @@
-const { Client, fql } = require('faunadb');
+const { Client } = require('faunadb');
 
 exports.handler = async (event) => {
   const { headers } = event;
@@ -20,11 +20,11 @@ exports.handler = async (event) => {
   const { pathname } = new URL(referer);
 
   try {
-    // Query to check if the document exists and update or create it
-    const result = await client.query(fql`
-      let match = hits.where(.pathname == ${pathname})
+    // Query Fauna using raw FQL string
+    const result = await client.query(`
+      let match = hits.where(.pathname == "${pathname}")
       if (match.isEmpty()) {
-        hits.create({ pathname: ${pathname}, hits: 1 })
+        hits.create({ pathname: "${pathname}", hits: 1 })
       } else {
         let doc = match.first()
         doc.update({ hits: doc.hits + 1 })
