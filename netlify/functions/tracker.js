@@ -1,7 +1,8 @@
-import { Client } from "fauna";
+import { Client, endpoints } from "fauna";
 
 const client = new Client({
-  secret: process.env.FAUNA_SECRET_KEY
+  secret: process.env.FAUNA_SECRET_KEY,
+  endpoint: endpoints.default
 });
 
 exports.handler = async (event) => {
