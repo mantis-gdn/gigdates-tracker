@@ -2,7 +2,8 @@
 const faunadb = require('faunadb');
 const q = faunadb.query;
 const client = new faunadb.Client({
-  secret: process.env.FAUNADB_SERVER_SECRET,
+  secret: process.env.FAUNADB_SERVER_SECRET, 
+  endpoint: 'https://db.fauna.com'
 });
 exports.handler = async (event, context) => {
   const { email, eventName } = JSON.parse(event.body);
