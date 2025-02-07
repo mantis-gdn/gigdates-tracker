@@ -1,49 +1,31 @@
-import { Client, fql } from 'fauna';
-
-const client = new Client({
-  secret: process.env.FAUNA_SECRET_KEY,
-  endpoint: 'https://db.fauna.com', // Ensure this is the correct endpoint
+// a sample fauna db v10 function
+const faunadb = require('faunadb');
+const q = faunadb.query;
+const client = new faunadb.Client({
+  secret: process.env.FAUNADB_SERVER_SECRET,
 });
-
-exports.handler = async (event) => {
-  const { headers } = event;
-
-  // Extract pathname from referer
-  const referer = headers.referer;
-  if (!referer) {
-    return {
-      statusCode: 400,
-      body: 'Missing referer header',
-    };
-  }
-
-  const { pathname } = new URL(referer);
+exports.handler = async (event, context) => {
+  const { email, eventName } = JSON.parse(event.body);
 
   try {
-    // Fauna v10 uses the fql template tag for queries
-    const result = await client.query(fql`
-      let matchPathname = hits.hits_by_pathname(${pathname})
-      if (matchPathname == null) {
-        hits.create({ pathname: ${pathname}, hits: 1 })
-      } else {
-        matchPathname.update({ hits: matchPathname.hits + 1 })
-      }
-    `);
+    const result = await client.query(
+      q.Create(q.Collection('tracker'), {
+        data: {
+          email,
+          eventName,
+          timestamp: new Date().toISOString(),
+        },
+      })
+    );
 
-    console.log('Fauna Response:', result);
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ message: 'Event tracked successfully', result }),
+    };
   } catch (error) {
-    console.error('Fauna Error:', error);
     return {
       statusCode: 500,
-      body: 'Fauna query error',
+      body: JSON.stringify({ message: 'Error tracking event', error }),
     };
   }
-
-  // Return a 1x1 pixel gif
-  return {
-    statusCode: 200,
-    body: 'R0lGODlhAQABAJAAAP8AAAAAACH5BAUQAAAALAAAAAABAAEAAAICBAEAOw==',
-    headers: { 'content-type': 'image/gif' },
-    isBase64Encoded: true,
-  };
 };
