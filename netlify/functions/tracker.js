@@ -20,18 +20,16 @@ exports.handler = async (event) => {
   const { pathname } = new URL(referer);
 
   try {
-    // Query Fauna using the new FQL v10 syntax
-    const result = await client.query({
-      query: `
-        let match = Collection('hits').filter(.pathname == $pathname) 
-        if (match.isEmpty()) { 
-          Collection('hits').create({ pathname: $pathname, hits: 1 }) 
-        } else { 
-          let doc = match.first() 
-          doc.update({ hits: doc.hits + 1 }) 
-        }
-      `,
-      arguments: { pathname },
+    // Fauna v10 requires a function for queries
+    const result = await client.query((q) => {
+      let match = q.collection("hits").filter((doc) => doc.pathname === pathname);
+
+      if (match.isEmpty()) {
+        return q.collection("hits").create({ pathname, hits: 1 });
+      } else {
+        let doc = match.first();
+        return doc.update({ hits: doc.hits + 1 });
+      }
     });
 
     console.log("Fauna Response:", result);
