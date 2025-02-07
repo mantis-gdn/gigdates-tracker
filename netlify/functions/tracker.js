@@ -22,11 +22,11 @@ exports.handler = async (event) => {
   try {
     // Fauna v10 uses the fql template tag for queries
     const result = await client.query(fql`
-      let match = hits.byPathname(${pathname})
-      if (match == null) {
+      let matchPathname = hits.byPathname(${pathname})
+      if (matchPathname == null) {
         hits.create({ pathname: ${pathname}, hits: 1 })
       } else {
-        match.update({ hits: match.hits + 1 })
+        matchPathname.update({ hits: matchPathname.hits + 1 })
       }
     `);
 
