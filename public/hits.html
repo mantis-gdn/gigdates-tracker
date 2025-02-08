@@ -16,22 +16,31 @@
       <tbody>
         <!-- Data will be inserted here -->
       </tbody>
+      <tfoot>
+        <tr>
+          <th>Total Hits</th>
+          <th id="total-hits">0</th>
+        </tr>
+      </tfoot>
     </table>
 
     <script>
       fetch("/.netlify/functions/get-hits")
         .then((response) => response.json())
         .then((data) => {
-          const tableBody = document
-            .getElementById("hits-table")
-            .getElementsByTagName("tbody")[0];
+          const tableBody = document.getElementById("hits-table").getElementsByTagName("tbody")[0];
+          let totalHits = 0;
+          
           data.forEach((item) => {
             const row = tableBody.insertRow();
             const cellPathname = row.insertCell(0);
             const cellHits = row.insertCell(1);
             cellPathname.textContent = item.pathname;
             cellHits.textContent = item.count;
+            totalHits += item.count;
           });
+          
+          document.getElementById("total-hits").textContent = totalHits;
         })
         .catch((error) => console.error("Error fetching page views:", error));
     </script>
