@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Page View Tracker</title>
+  </head>
+  <body>
+    <h1>Page Views</h1>
+    <table id="hits-table" border="1">
+      <thead>
+        <tr>
+          <th>Pathname</th>
+          <th>Hits</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Data will be inserted here -->
+      </tbody>
+    </table>
+
+    <script>
+      fetch("/.netlify/functions/get-hits")
+        .then((response) => response.json())
+        .then((data) => {
+          const tableBody = document
+            .getElementById("hits-table")
+            .getElementsByTagName("tbody")[0];
+          data.forEach((item) => {
+            const row = tableBody.insertRow();
+            const cellPathname = row.insertCell(0);
+            const cellHits = row.insertCell(1);
+            cellPathname.textContent = item.pathname;
+            cellHits.textContent = item.count;
+          });
+        })
+        .catch((error) => console.error("Error fetching page views:", error));
+    </script>
+  </body>
+</html>

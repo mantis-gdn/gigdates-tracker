@@ -1,32 +1,38 @@
-// a sample fauna db v10 function
-const faunadb = require('faunadb');
-const q = faunadb.query;
-const client = new faunadb.Client({
-  secret: process.env.FAUNADB_SERVER_SECRET, 
-  endpoint: 'https://db.fauna.com'
+const { Client, fql } = require('fauna');
+
+const client = new Client({
+  secret: process.env.FAUNA_SECRET_KEY,
 });
-exports.handler = async (event, context) => {
-  const { email, eventName } = JSON.parse(event.body);
 
-  try {
-    const result = await client.query(
-      q.Create(q.Collection('tracker'), {
-        data: {
-          email,
-          eventName,
-          timestamp: new Date().toISOString(),
-        },
-      })
-    );
+exports.handler = async (event) => {
+  const { headers } = event;
+  const referer = headers.referer;
 
+  // If there's no referer, return early
+  if (!referer) {
     return {
-      statusCode: 200,
-      body: JSON.stringify({ message: 'Event tracked successfully', result }),
-    };
-  } catch (error) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ message: 'Error tracking event', error }),
+      statusCode: 400,
+      body: 'Bad Request: Missing Referer Header',
     };
   }
+
+  const { pathname } = new URL(referer);
+
+  try {
+    // Insert a new document for each page view
+    await client.query(
+      fql`
+        hits.create({ pathname: ${pathname}, timestamp: Time.now() })
+      `
+    );
+  } catch (error) {
+    console.error('Error tracking page view:', error);
+  }
+
+  return {
+    statusCode: 200,
+    body: 'R0lGODlhAQABAJAAAP8AAAAAACH5BAUQAAAALAAAAAABAAEAAAICBAEAOw==',
+    headers: { 'content-type': 'image/gif' },
+    isBase64Encoded: true,
+  };
 };
